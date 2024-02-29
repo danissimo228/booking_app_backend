@@ -1,5 +1,19 @@
 version: '3'
 services:
+  app:
+    container_name: booking-app
+    build:
+      context: .
+    command: bash -c " python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+    ports:
+      - ${SERVICE_PORT}:${SERVICE_PORT}
+    depends_on:
+      - db
   db:
     image: postgres:latest
     container_name: postgres-booking
