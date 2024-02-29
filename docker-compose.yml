@@ -1,0 +1,17 @@
+version: '3'
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres-booking
+    ports:
+      - ${DATABASE_PORT}:5432/tcp
+    environment:
+      POSTGRES_PORT: ${DATABASE_PORT}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_HOST: ${DATABASE_HOST}
+      PORT: ${DATABASE_PORT}
+
+volumes:
+ postgres_data:
