@@ -21,7 +21,7 @@ class UsersModelViewSet(ResponseModelViewSetMixin):
     @extend_schema(
         request=serializers.RequestCreateUserSerializer,
         responses={
-            200: serializers.UserProfileSerializer,
+            200: serializers.RequestUserProfileSerializer,
             400: util_serializer.NormalAnswerSerializer,
             401: util_serializer.TokenErrorSerializer,
             404: util_serializer.NormalAnswerSerializer,
@@ -30,18 +30,23 @@ class UsersModelViewSet(ResponseModelViewSetMixin):
     @log_viewset_action(logger)
     def create_user(self, request, *args, **kwargs):
         data = self.serialize_request(serializers.RequestCreateUserSerializer, request.data)
+        username = data.get("username", None)
 
-        if Users.objects.filter(email=data["email"]).exists() or Users.objects.filter(email=data["username"]).exists():
+        if Users.objects.filter(email=data["email"]).exists():
             return self.error_response(400, "User already exists")
+
+        if username:
+            if Users.objects.filter(username=username).exists():
+                return self.error_response(400, "User already exists")
 
         created_user = Users.objects.create_user(**data)
 
         return self.success_response(
-            self.serialize_request(serializers.UserProfileSerializer, model_to_dict(created_user))
+            self.serialize_request(serializers.RequestUserProfileSerializer, model_to_dict(created_user))
         )
 
     @extend_schema(
-        request=serializers.RecoverUsersPasswordSerializer,
+        request=serializers.RequestRecoverUsersPasswordSerializer,
         responses={
             200: util_serializer.NormalAnswerSerializer,
             400: util_serializer.NormalAnswerSerializer,
@@ -51,7 +56,7 @@ class UsersModelViewSet(ResponseModelViewSetMixin):
     )
     @log_viewset_action(logger)
     def recover(self, request, *args, **kwargs):
-        data = self.serialize_request(serializers.RecoverUsersPasswordSerializer, request.data)
+        data = self.serialize_request(serializers.RequestRecoverUsersPasswordSerializer, request.data)
         email = data["email"]
         today = str(timezone.now()).split(" ")[0]
         try:
@@ -77,7 +82,7 @@ class UsersModelViewSet(ResponseModelViewSetMixin):
         return self.success_response()
 
     @extend_schema(
-        request=serializers.RecoverTokenSerializer,
+        request=serializers.RequestRecoverTokenSerializer,
         responses={
             200: util_serializer.NormalAnswerSerializer,
             400: util_serializer.NormalAnswerSerializer,
@@ -87,7 +92,7 @@ class UsersModelViewSet(ResponseModelViewSetMixin):
     )
     @log_viewset_action(logger)
     def change_password(self, request, *args, **kwargs):
-        data = self.serialize_request(serializers.RecoverTokenSerializer, request.data)
+        data = self.serialize_request(serializers.RequestRecoverTokenSerializer, request.data)
         recover_data = RecoverPasswordData.objects.filter(token=data["token"]).first()
 
         if not recover_data:
@@ -108,8 +113,32 @@ class UsersModelViewSet(ResponseModelViewSetMixin):
         return self.success_response()
 
     @extend_schema(
+        request=serializers.RequestSetAttrUserSerializer,
+        description="Метод изменяет/добовляет поля пользовотелю если они существуют",
         responses={
-            200: serializers.UserProfileSerializer,
+            200: serializers.RequestUserProfileSerializer,
+            400: util_serializer.NormalAnswerSerializer,
+            401: util_serializer.TokenErrorSerializer,
+            404: util_serializer.NormalAnswerSerializer,
+        },
+    )
+    @log_viewset_action(logger)
+    def set_user_attr(self, request, *args, **kwargs):
+        user = request.user
+        if not user.is_authenticated:
+            return self.error_response(401, "No access")
+
+        data = self.serialize_request(serializers.RequestSetAttrUserSerializer, request.data)
+        users = Users.objects.filter(id=user.id)
+        users.update(**data)
+
+        return self.success_response(
+            self.serialize_request(serializers.RequestUserProfileSerializer, model_to_dict(users.first()))
+        )
+
+    @extend_schema(
+        responses={
+            200: serializers.RequestUserProfileSerializer,
             400: util_serializer.NormalAnswerSerializer,
             401: util_serializer.TokenErrorSerializer,
             404: util_serializer.NormalAnswerSerializer,
@@ -120,4 +149,7 @@ class UsersModelViewSet(ResponseModelViewSetMixin):
         user = request.user
         if not user.is_authenticated:
             return self.error_response(401, "No access")
-        return self.success_response(self.serialize_request(serializers.UserProfileSerializer, model_to_dict(user)))
+
+        return self.success_response(
+            self.serialize_request(serializers.RequestUserProfileSerializer, model_to_dict(user))
+        )

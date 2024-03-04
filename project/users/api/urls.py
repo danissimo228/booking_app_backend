@@ -14,4 +14,7 @@ urlpatterns = [
     path(
         'get-user-profile/', views.UsersModelViewSet.as_view({"get": "get_user_profile"}), name='profile'
     ),
+    path(
+        'set-user-attr/', views.UsersModelViewSet.as_view({"patch": "set_user_attr"}), name='set profile'
+    ),
 ]

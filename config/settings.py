@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from datetime import timedelta
 from pathlib import Path
+import logging.config
 import environ
 
 env = environ.Env()
@@ -20,6 +21,9 @@ env = environ.Env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env.read_env(str(BASE_DIR / ".env"))
+
+LOG_DIR = BASE_DIR / "logs"
+LOG_DIR.mkdir(exist_ok=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -171,6 +175,46 @@ SIMPLE_JWT = {
 }
 
 
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '%(name)-12s %(levelname)-8s %(message)s'
+        },
+        'file': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
+        }
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'console'
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'formatter': 'file',
+            'filename': 'debug.log'
+        }
+    },
+    'loggers': {
+        'django': {
+            'level': 'INFO',
+            'handlers': ['console', 'file']
+        },
+        'main': {
+            'level': 'INFO',
+            'handlers': ['console', 'file']
+        },
+        'project.users.api.views': {
+            'level': 'INFO',
+            'handlers': ['console', 'file']
+        }
+    }
+})
+
+
 STATIC_URL = 'static/'
 
 LANGUAGE_CODE = 'en-us'
@@ -191,3 +235,10 @@ SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
 SENDER_EMAIL = env.str('SENDER_EMAIL', '')
 EMAIL_PASSWORD = env.str('EMAIL_PASSWORD', '')
+
+
+MINIO_ROOT_USER = env.str('MINIO_ROOT_USER', '')
+MINIO_ROOT_PASSWORD = env.str('MINIO_ROOT_PASSWORD', '')
+MINIO_ACCESS_KEY = env.str('MINIO_ACCESS_KEY', '')
+MINIO_SECRET_KEY = env.str('MINIO_SECRET_KEY', '')
+MINIO_END_POINT = env.str('MINIO_END_POINT', '')

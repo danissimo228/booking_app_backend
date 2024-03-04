@@ -11,15 +11,19 @@ class Users(AbstractUser):
     """Custom user model"""
     objects = UserManager()
 
+    first_name = models.CharField(null=True, max_length=150, blank=True)
+    last_name = models.CharField(null=True, max_length=150, blank=True)
     middle_name = models.CharField(null=True, max_length=150, blank=True)
-    username = models.CharField(max_length=15, unique=True, null=False)
-    email = models.EmailField("email address", null=True, unique=True, db_index=True)
-    phone = models.CharField(max_length=15, null=False, db_index=True)
-    gender = models.CharField(max_length=100, choices=GenderChoices.choices, null=False)
-    geolocation = models.CharField(max_length=255, null=False)
-    rating = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)], default=0, null=False)
+    username = models.CharField(max_length=15, unique=True, null=True, blank=True)
+    email = models.EmailField("email address", null=False, unique=True, db_index=True)
+    phone = models.CharField(max_length=15, null=True, blank=True, db_index=True)
+    gender = models.CharField(max_length=100, choices=GenderChoices.choices, null=True, blank=True)
+    geolocation = models.CharField(max_length=255, null=True, blank=True)
+    rating = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)], default=0, null=True, blank=True
+    )
     photo_url = models.CharField(null=True, default=None, blank=True)
-    date_of_birthday = models.DateField(null=False)
+    date_of_birthday = models.DateField(null=True, blank=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
@@ -36,8 +40,8 @@ class Users(AbstractUser):
         related_name='user_groups'
     )
 
-    USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = []
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
 
     def __str__(self):
         return f"{self.email} {self.username}"

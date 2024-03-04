@@ -4,28 +4,37 @@ services:
     container_name: booking-app
     build:
       context: .
-    command: bash -c " python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+      dockerfile: ./Dockerfile
+    command: bash -c " python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8765"
+    restart: always
+    env_file:
+       - ".env"
     environment:
       - POSTGRES_HOST=db
       - POSTGRES_USER=${DATABASE_USER}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_DB=${DATABASE_NAME}
     ports:
-      - ${SERVICE_PORT}:${SERVICE_PORT}
+      - 127.0.0.1:${SERVICE_PORT}:${SERVICE_PORT}
+    links:
+      - postgres
     depends_on:
-      - db
-  db:
-    image: postgres:latest
+      - postgres
+
+  postgres:
+    image: postgres:15.1
     container_name: postgres-booking
+    hostname: postgres
+    env_file:
+      - ".env"
     ports:
-      - ${DATABASE_PORT}:5432/tcp
+      - 127.0.0.1:${DATABASE_PORT}:5432/tcp
     environment:
       POSTGRES_PORT: ${DATABASE_PORT}
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_HOST: ${DATABASE_HOST}
-      PORT: ${DATABASE_PORT}
-
-volumes:
- postgres_data:
+    volumes:
+      - "./service/postgresql:/var/lib/postgresql/data"
+    restart: unless-stopped
