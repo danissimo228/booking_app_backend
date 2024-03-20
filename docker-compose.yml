@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    command: bash -c " python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8765"
+    command: sh start.sh
     restart: always
     env_file:
        - ".env"
@@ -15,7 +15,7 @@ services:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_DB=${DATABASE_NAME}
     ports:
-      - 127.0.0.1:${SERVICE_PORT}:${SERVICE_PORT}
+      - 127.0.0.1:${SERVICE_PORT}:8765
     links:
       - postgres
     depends_on:

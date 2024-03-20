@@ -214,6 +214,22 @@ logging.config.dictConfig({
     }
 })
 
+CSRF_TRUSTED_ORIGINS = ['https://back.leolamotortrike.daark.net']
+CSRF_COOKIE_SECURE = False
+
+CSRF_COOKIE_HTTPONLY = True
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = [
+    "access-control-allow-credentials",
+    "content-type",
+    "HTTP_X_CSRFTOKEN",
+    "AUTHORIZATION"
+]
+
+CORS_ORIGIN_ALLOW_ALL = True
+
 
 STATIC_URL = 'static/'
 

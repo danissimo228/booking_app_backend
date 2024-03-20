@@ -21,7 +21,7 @@ class UsersModelViewSet(ResponseModelViewSetMixin):
     @extend_schema(
         request=serializers.RequestCreateUserSerializer,
         responses={
-            200: serializers.RequestUserProfileSerializer,
+            200: serializers.ResponseUserProfileSerializer,
             400: util_serializer.NormalAnswerSerializer,
             401: util_serializer.TokenErrorSerializer,
             404: util_serializer.NormalAnswerSerializer,
@@ -42,7 +42,7 @@ class UsersModelViewSet(ResponseModelViewSetMixin):
         created_user = Users.objects.create_user(**data)
 
         return self.success_response(
-            self.serialize_request(serializers.RequestUserProfileSerializer, model_to_dict(created_user))
+            self.serialize_request(serializers.ResponseUserProfileSerializer, model_to_dict(created_user))
         )
 
     @extend_schema(
@@ -116,7 +116,7 @@ class UsersModelViewSet(ResponseModelViewSetMixin):
         request=serializers.RequestSetAttrUserSerializer,
         description="Метод изменяет/добовляет поля пользовотелю если они существуют",
         responses={
-            200: serializers.RequestUserProfileSerializer,
+            200: serializers.ResponseUserProfileSerializer,
             400: util_serializer.NormalAnswerSerializer,
             401: util_serializer.TokenErrorSerializer,
             404: util_serializer.NormalAnswerSerializer,
@@ -133,12 +133,12 @@ class UsersModelViewSet(ResponseModelViewSetMixin):
         users.update(**data)
 
         return self.success_response(
-            self.serialize_request(serializers.RequestUserProfileSerializer, model_to_dict(users.first()))
+            self.serialize_request(serializers.ResponseUserProfileSerializer, model_to_dict(users.first()))
         )
 
     @extend_schema(
         responses={
-            200: serializers.RequestUserProfileSerializer,
+            200: serializers.ResponseUserProfileSerializer,
             400: util_serializer.NormalAnswerSerializer,
             401: util_serializer.TokenErrorSerializer,
             404: util_serializer.NormalAnswerSerializer,
@@ -151,5 +151,5 @@ class UsersModelViewSet(ResponseModelViewSetMixin):
             return self.error_response(401, "No access")
 
         return self.success_response(
-            self.serialize_request(serializers.RequestUserProfileSerializer, model_to_dict(user))
+            self.serialize_request(serializers.ResponseUserProfileSerializer, model_to_dict(user))
         )

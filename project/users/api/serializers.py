@@ -16,7 +16,7 @@ class RequestCreateUserSerializer(serializers.Serializer):
     date_of_birthday = serializers.DateField(required=False, allow_null=True)
 
 
-class RequestUserProfileSerializer(serializers.Serializer):
+class ResponseUserProfileSerializer(serializers.Serializer):
     first_name = serializers.CharField(required=False, allow_null=True)
     last_name = serializers.CharField(required=False, allow_null=True)
     middle_name = serializers.CharField(required=False, allow_null=True)
@@ -51,3 +51,7 @@ class RequestSetAttrUserSerializer(serializers.Serializer):
     geolocation = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     photo_url = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     date_of_birthday = serializers.DateField(required=False, allow_null=True)
+
+
+class RequestSubscribeToUserSerializer(serializers.Serializer):
+    subscribe_user_id = serializers.IntegerField(min_value=1)

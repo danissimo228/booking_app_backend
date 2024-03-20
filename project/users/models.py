@@ -48,7 +48,7 @@ class Users(AbstractUser):
 
 
 class Subs(CreatedUpdatedModelMixin):
-    sub = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="sub_id")
+    subscriber = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="sub_id")
     user = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="user_id")
 
     def __str__(self):

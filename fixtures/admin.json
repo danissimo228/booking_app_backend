@@ -1,0 +1,13 @@
+[
+  {
+    "model": "users.users",
+    "pk": 1,
+    "fields": {
+      "email": "admin@gmail.com",
+      "username": "admin",
+      "password": "pbkdf2_sha256$720000$ty0FJ6lM1CxpXovIIZXYqo$fsC4WCeZzHtKPGJhrPCv6fWI8vRJWBonsxeKTT6hD/M=",
+      "is_superuser": true,
+      "is_staff": true
+    }
+  }
+]
