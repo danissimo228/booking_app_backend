@@ -17,4 +17,13 @@ urlpatterns = [
     path(
         'set-user-attr/', views.UsersModelViewSet.as_view({"patch": "set_user_attr"}), name='set profile'
     ),
+    path(
+        'upload-photo/', views.UsersModelViewSet.as_view({"post": "upload_photo"}), name='upload photo'
+    ),
+    path(
+        'delete-photo/', views.UsersModelViewSet.as_view({"delete": "delete_photo"}), name='delete photo'
+    ),
+    path(
+        'get-photo/', views.UsersModelViewSet.as_view({"get": "get_photo"}), name='get photo'
+    ),
 ]

@@ -38,3 +38,34 @@ services:
     volumes:
       - "./service/postgresql:/var/lib/postgresql/data"
     restart: unless-stopped
+
+  minio:
+    container_name: "minio"
+    hostname: minio
+    image: minio/minio:latest
+    env_file:
+      - ".env"
+    ports:
+      - ${MINIO_END_POINT_UI}:9090
+      - ${MINIO_END_POINT}:9000
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+    volumes:
+      - "./data_store/minio:/data"
+    restart: unless-stopped
+    command: minio server /data --console-address ":9090"
+
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD;
+      /usr/bin/mc mb myminio/avatars;
+      /usr/bin/mc policy set public myminio/avatars;
+      exit 0;
+      "

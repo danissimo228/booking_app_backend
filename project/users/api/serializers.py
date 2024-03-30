@@ -55,3 +55,7 @@ class RequestSetAttrUserSerializer(serializers.Serializer):
 
 class RequestSubscribeToUserSerializer(serializers.Serializer):
     subscribe_user_id = serializers.IntegerField(min_value=1)
+
+
+class ResponseGetPhotoSerializer(serializers.Serializer):
+    photo_base64 = serializers.CharField()
